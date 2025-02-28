@@ -25,6 +25,8 @@ cargo run
 2. Instala Rust y Cargo si aún no están instalados.
 3. Configura tu API key como variable de entorno o en un archivo `.env`.
 4. En la carpeta principal, ejecuta:
+
+
    ```bash
    cargo run
    ```

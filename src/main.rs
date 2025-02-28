@@ -1,60 +1,14 @@
+// //! External dependencies
 use chrono::{Duration, NaiveTime, Utc};
 use dotenv::dotenv;
-use lazy_static::lazy_static;
-use reqwest;
-use serde::Deserialize;
-
 use teloxide::prelude::*;
-use tokio::sync::Mutex;
-use rand::Rng;
-use std::collections::HashSet;
 
-lazy_static! {
-    static ref CHAT_IDS: Mutex<HashSet<i64>> = Mutex::new(HashSet::new());
-}
-
-#[derive(Debug, Deserialize)]
-struct ApiResponse {
-    info: Info,
-    results: Vec<Character>,
-}
-
-#[derive(Debug, Deserialize)]
-struct Info {   
-    next: Option<String>,
-    
-}
-
-#[derive(Debug, Deserialize, Clone)]
-struct Character {
-    name: String,
-    status: String,
-    species: String,
-    #[serde(rename = "type")]
-    character_type: String,
-    image: String,
-}
-
-async fn get_random_character() -> Result<Character, Box<dyn std::error::Error + Send + Sync>> {
-    let client = reqwest::Client::new();
-    let mut characters = Vec::new();
-    let mut next_url = Some("https://rickandmortyapi.com/api/character".to_string());
-
-    while let Some(url) = next_url {
-        let response = client.get(&url).send().await?;
-        let api_response: ApiResponse = response.json().await?;
-        characters.extend(api_response.results);
-        next_url = api_response.info.next;
-    }
-
-    if characters.is_empty() {
-        return Err("No se encontraron personajes".into());
-    }
-
-    let mut rng = rand::rng();
-    let index = rng.random_range(0..characters.len());
-    Ok(characters[index].clone())
-}
+// //! Internal dependencies
+use bot_rust::components::callback_handler::callback_handler;
+use bot_rust::components::command_handler::commands_handler;
+use bot_rust::components::get_random_character::get_random_character;
+use bot_rust::lazy_chat_ids::CHAT_IDS;
+use bot_rust::components::command_handler::Command;
 
 #[tokio::main]
 async fn main() {
@@ -69,7 +23,7 @@ async fn main() {
                 let today = now.date();
                 let time = NaiveTime::from_hms_opt(9, 0, 0).unwrap();
                 let target = today.and_time(time);
-                
+
                 if target > now {
                     target
                 } else {
@@ -106,10 +60,7 @@ async fn main() {
                     }
 
                     for chat_id in chat_ids {
-                        if let Err(e) = bot_clone
-                            .send_message(ChatId(chat_id), &message)
-                            .await
-                        {
+                        if let Err(e) = bot_clone.send_message(ChatId(chat_id), &message).await {
                             eprintln!("Error enviando mensaje: {}", e);
                         }
                     }
@@ -119,37 +70,17 @@ async fn main() {
         }
     });
 
-    teloxide::repl(bot, |bot: Bot, msg: Message| async move {
-        if let Some(text) = msg.text() {
-            if text == "/start" {
-                bot.send_message(
-                    msg.chat.id,
-                    "¡Hola! Te enviaré un personaje de Rick y Morty cada día a las 9:00 AM UTC.",
-                )
-                .await?;
-                
-                CHAT_IDS.lock().await.insert(msg.chat.id.0);
-            } else if text == "/random" {
-                match get_random_character().await {
-                    Ok(character) => {
-                        let message = format!(
-                            "Personaje aleatorio:\n\nNombre: {}\nEstado: {}\nEspecie: {}\nTipo: {}\n{}",
-                            character.name,
-                            character.status,
-                            character.species,
-                            character.character_type,
-                            character.image
-                        );
-                        bot.send_message(msg.chat.id, message).await?;
-                    }
-                    Err(e) => {
-                        bot.send_message(msg.chat.id, format!("Error: {}", e))
-                            .await?;
-                    }
-                }
-            }
-        }
-        Ok(())
-    })
-    .await;
+    let handler = dptree::entry()
+        .branch(
+            Update::filter_message()
+                .filter_command::<Command>()
+                .endpoint(commands_handler),
+        )
+        .branch(Update::filter_callback_query().endpoint(callback_handler));
+
+    Dispatcher::builder(bot, handler)
+        .enable_ctrlc_handler()
+        .build()
+        .dispatch()
+        .await;
 }
