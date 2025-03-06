@@ -1,6 +1,6 @@
 use teloxide::{ prelude::{Requester, ResponseResult}, Bot};
 use teloxide::types::CallbackQuery;
-use crate::components::send_random_characters::send_random_character;
+use crate::components::characters::send_random_characters::send_random_character;
 use crate::lazy_chat_ids::CHAT_IDS;
 
 pub async fn callback_handler(bot: Bot, q: CallbackQuery) -> ResponseResult<()> {

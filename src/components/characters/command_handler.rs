@@ -9,7 +9,7 @@ use teloxide::{
 use teloxide::types::{InlineKeyboardButton, InlineKeyboardMarkup};
 
 use crate::lazy_chat_ids::CHAT_IDS;
-use crate::components::send_random_characters::send_random_character;
+use crate::components::characters::send_random_characters::send_random_character;
 
 
 #[derive(BotCommands, Clone, Debug)]
@@ -36,7 +36,10 @@ fn get_main_menu_keyboard() -> InlineKeyboardMarkup {
             "❌ Cancelar Suscripción",
             "unsubscribe",
         )],
-        vec![InlineKeyboardButton::callback("ℹ️ Información", "info")],
+        vec![InlineKeyboardButton::callback(
+            "ℹ️ Información", 
+            "info"
+        )],
     ])
 }
 

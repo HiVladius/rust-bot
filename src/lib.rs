@@ -2,10 +2,17 @@
 
 
 pub mod components{
-    pub mod get_random_character;
-    pub mod send_random_characters;
-    pub mod command_handler;
-    pub mod callback_handler;
+    pub  mod characters{
+        pub mod get_random_character;
+        pub mod send_random_characters;
+        pub mod command_handler;
+        pub mod callback_handler;
+        pub mod send_episode;
+    }
+    pub mod search{
+        
+    }
+    
 }
 
 pub mod lazy_chat_ids{

@@ -4,11 +4,11 @@ use dotenv::dotenv;
 use teloxide::prelude::*;
 
 // //! Internal dependencies
-use bot_rust::components::callback_handler::callback_handler;
-use bot_rust::components::command_handler::commands_handler;
-use bot_rust::components::get_random_character::get_random_character;
+use bot_rust::components::characters::callback_handler::callback_handler;
+use bot_rust::components::characters::command_handler::commands_handler;
+use bot_rust::components::characters::get_random_character::get_random_character;
 use bot_rust::lazy_chat_ids::CHAT_IDS;
-use bot_rust::components::command_handler::Command;
+use bot_rust::components::characters::command_handler::Command;
 
 #[tokio::main]
 async fn main() {
@@ -43,14 +43,15 @@ async fn main() {
             tokio::time::sleep(sleep_duration).await;
 
             match get_random_character().await {
-                Ok(character) => {
+                Ok((character, episodes)) => {
                     let message = format!(
-                        "Personaje del día:\n\nNombre: {}\nEstado: {}\nEspecie: {}\nTipo: {}\n{}",
+                        "Personaje del día:\n\nNombre: {}\nEstado: {}\nEspecie: {}\nTipo: {}\n{}\n{}",
                         character.name,
                         character.status,
                         character.species,
                         character.character_type,
-                        character.image
+                        character.image,
+                        episodes
                     );
 
                     let chat_ids = CHAT_IDS.lock().await.clone();
