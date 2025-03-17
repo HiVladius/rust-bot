@@ -41,7 +41,7 @@ pub async fn callback_handler(bot: Bot, q: CallbackQuery) -> ResponseResult<()> 
                 bot.answer_callback_query(q.id).await?;
                 bot.send_message(
                     chat_id,
-                    "Este bot te envía información sobre personajes de Rick y Morty.\n\nComandos disponibles:\n/start - Iniciar el bot\n/menu - Mostrar menú principal\n/random - Obtener un personaje aleatorio"
+                    "Este bot te envía información sobre personajes de Rick y Morty.\n\nComandos disponibles:\n/start - Iniciar el bot\n/menu - Mostrar menú principal\n/random - Obtener un personaje aleatorio\n/buscar - Buscar personajes por nombre"
                 ).await?;
             }
             _ => {
