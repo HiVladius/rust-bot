@@ -6,9 +6,10 @@ use teloxide::prelude::*;
 // //! Internal dependencies
 use bot_rust::components::characters::callback_handler::callback_handler;
 use bot_rust::components::characters::command_handler::commands_handler;
-use bot_rust::components::characters::get_random_character::get_random_character;
-use bot_rust::lazy_chat_ids::CHAT_IDS;
 use bot_rust::components::characters::command_handler::Command;
+use bot_rust::components::characters::get_random_character::get_random_character;
+use bot_rust::components::game::trivia_game::process_trivia_answer;
+use bot_rust::lazy_chat_ids::CHAT_IDS;
 
 #[tokio::main]
 async fn main() {
@@ -77,7 +78,8 @@ async fn main() {
                 .filter_command::<Command>()
                 .endpoint(commands_handler),
         )
-        .branch(Update::filter_callback_query().endpoint(callback_handler));
+        .branch(Update::filter_callback_query().endpoint(callback_handler))
+        .branch(Update::filter_message().endpoint(process_trivia_answer));
 
     Dispatcher::builder(bot, handler)
         .enable_ctrlc_handler()
