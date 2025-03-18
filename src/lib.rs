@@ -12,6 +12,9 @@ pub mod components{
     pub mod search{
         pub mod character_search;
     }
+    pub mod game{
+        pub mod trivia_game;
+    }
     
 }
 

@@ -1,11 +1,7 @@
 use crate::ApiResponse;
 use crate::Character;
 
-fn fetch_all_characters<'a>(
-    client: &'a reqwest::Client,
-    url: &'a str,
-    characters: Vec<Character>,
-) -> std::pin::Pin<
+fn fetch_all_characters<'a>(client: &'a reqwest::Client, url: &'a str, characters: Vec<Character>) -> std::pin::Pin<
     Box<
         dyn std::future::Future<
                 Output = Result<Vec<Character>, Box<dyn std::error::Error + Send + Sync>>,
@@ -31,39 +27,8 @@ fn fetch_all_characters<'a>(
 // Maximum number of characters to display in a single message
 const MAX_DISPLAYED_CHARACTERS: usize = 20;
 
-pub async fn character_search(
-    name: &str,
-) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
-    let client = reqwest::Client::new();
-
-    // Use the correct API endpoint with name query parameter
-    let url = format!("https://rickandmortyapi.com/api/character/?name={}", name);
-
-    let characters = fetch_all_characters(&client, &url, Vec::new()).await?;
-
-    if characters.is_empty() {
-        Ok(format!(
-            "No se encontraron personajes con el nombre '{}'",
-            name
-        ))
-    } else {
-        let mut message = format!(
-            "Encontrados {} personajes que coinciden con '{}':\n\n",
-            characters.len(),
-            name
-        );
-        for character in characters {
-            message.push_str(&format!(
-                "📌 *{}*\n• Estado: {}\n\n",
-                character.name, character.status
-            ));
-        }
-        Ok(message)
-    }
-}
-pub async fn found_character(
-    name: &str,
-) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+pub async fn found_character(name: &str,) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+    
     let client = reqwest::Client::new();
 
     // Use the API endpoint with only name query parameter
@@ -85,13 +50,8 @@ pub async fn found_character(
             total_characters, name
         );
 
-        for (i, character) in characters.iter().enumerate().take(characters_to_display) {
-            println!(
-                "[DEBUG] Character {}: {} (Status: {})",
-                i + 1,
-                character.name,
-                character.status
-            );
+        for (_i, character) in characters.iter().enumerate().take(characters_to_display) {
+           
             message.push_str(&format!(
                 "📌 *{}*\n• Estado: {}\n\n",
                 character.name, character.status
@@ -104,6 +64,8 @@ pub async fn found_character(
                 "ℹ️ *Mostrando {} de {} personajes encontrados*",
                 characters_to_display, total_characters
             ));
+
+            
         }
 
         Ok(message)

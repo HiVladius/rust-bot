@@ -2,13 +2,14 @@ use teloxide::{
     payloads::SendMessageSetters,
     prelude::{Requester, ResponseResult},
     types::{ChatAction, Message},
-    utils::command::BotCommands,
+    utils::command:: BotCommands,
     Bot,
 };
 
 use teloxide::types::{InlineKeyboardButton, InlineKeyboardMarkup};
 
 use crate::components::characters::send_random_characters::send_random_character;
+use crate::components::game::trivia_game::trivia_game;
 use crate::components::search::character_search::found_character;
 use crate::lazy_chat_ids::CHAT_IDS;
 
@@ -23,6 +24,8 @@ pub enum Command {
     Random,
     #[command(description = "Buscar un personaje por nombre")]
     Buscar,
+    #[command(description = "Trivia de personajes")]
+    Trivia,
 }
 fn get_main_menu_keyboard() -> InlineKeyboardMarkup {
     InlineKeyboardMarkup::new(vec![
@@ -97,6 +100,9 @@ pub async fn commands_handler(bot: Bot, msg: Message, cmd: Command) -> ResponseR
                     }
                 }
             }
+        }
+        Command::Trivia => {
+            trivia_game(&bot, msg.chat.id).await?;
         }
     }
     Ok(())

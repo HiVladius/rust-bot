@@ -23,8 +23,7 @@ fn fetch_all_characters<'a>(
     })
 }
 
-pub async fn get_random_character(
-) -> Result<(Character, usize), Box<dyn std::error::Error + Send + Sync>> {
+pub async fn get_random_character() -> Result<(Character, usize), Box<dyn std::error::Error + Send + Sync>> {
     let client = reqwest::Client::new();
     let characters = fetch_all_characters(
         &client,
