@@ -48,6 +48,7 @@ pub async fn trivia_game(bot: &Bot, chat_id: ChatId) -> ResponseResult<()> {
             
             let question = generate_question(&state.character, state.question_index);
             bot.send_message(chat_id, &question).await?;
+            
 
 
             TRIVIA_STATES.lock().await.insert(chat_id, state); // Store the state
@@ -80,7 +81,7 @@ pub async fn process_trivia_answer(bot: Bot, msg: Message) -> ResponseResult<()>
             bot.send_message(chat_id, &question).await?;
             states.insert(chat_id, state);
         }else{
-            let final_message = format!("Fin del juego! Tu puntaje es: {} puntos", state.score);
+            let final_message = format!("Fin del juego! \n\n Tu puntaje es: {} puntos", state.score);
             bot.send_message(chat_id, &final_message).await?;
         }
 

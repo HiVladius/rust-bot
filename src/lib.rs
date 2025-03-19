@@ -1,27 +1,23 @@
-
-
-
-pub mod components{
-    pub  mod characters{
-        pub mod get_random_character;
-        pub mod send_random_characters;
-        pub mod command_handler;
+pub mod components {
+    pub mod characters {
         pub mod callback_handler;
+        pub mod command_handler;
+        pub mod get_random_character;
         pub mod send_episode;
+        pub mod send_random_characters;
     }
-    pub mod search{
+    pub mod search {
         pub mod character_search;
     }
-    pub mod game{
+    pub mod game {
         pub mod trivia_game;
     }
-    
 }
 
-pub mod lazy_chat_ids{
+pub mod lazy_chat_ids {
     use lazy_static::lazy_static;
+    use std::collections::HashSet;
     use tokio::sync::Mutex;
-use std::collections::HashSet;
     lazy_static! {
         pub static ref CHAT_IDS: Mutex<HashSet<i64>> = Mutex::new(HashSet::new());
     }
@@ -50,4 +46,3 @@ struct ApiResponse {
 struct Info {
     next: Option<String>,
 }
-
