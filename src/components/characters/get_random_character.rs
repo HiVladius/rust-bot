@@ -1,27 +1,7 @@
 use rand::Rng;
-use serde::Deserialize;
 
-#[derive(Debug, Deserialize)]
-struct ApiResponse {
-    info: Info,
-    results: Vec<Character>,
-}
-
-#[derive(Debug, Deserialize)]
-struct Info {
-    next: Option<String>,
-}
-
-#[derive(Debug, Deserialize, Clone)]
-pub struct Character {
-    pub name: String,
-    pub status: String,
-    pub species: String,
-    pub episode: Vec<String>, // Ensure this field is correctly deserialized
-    #[serde(rename = "type")]
-    pub character_type: String,
-    pub image: String,
-}
+use crate::Character;
+use crate::ApiResponse;
 
 // Helper function to fetch all characters recursively
 fn fetch_all_characters<'a>(
@@ -43,8 +23,7 @@ fn fetch_all_characters<'a>(
     })
 }
 
-pub async fn get_random_character(
-) -> Result<(Character, usize), Box<dyn std::error::Error + Send + Sync>> {
+pub async fn get_random_character() -> Result<(Character, usize), Box<dyn std::error::Error + Send + Sync>> {
     let client = reqwest::Client::new();
     let characters = fetch_all_characters(
         &client,
